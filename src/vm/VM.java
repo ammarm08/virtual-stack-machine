@@ -1,5 +1,7 @@
 package vm;
 
+import static vm.Bytecode.*;
+
 public class VM {
   int[] data; // data memory
   int[] code; // code memory
@@ -19,6 +21,15 @@ public class VM {
   }
 
   public void cpu() {
-    // do nothing 
+    // Fetch
+    int opcode = code[ip];
+
+    // Decode
+    switch (opcode) {
+      case HALT :
+        return;
+    }
+
+
   }
 }
