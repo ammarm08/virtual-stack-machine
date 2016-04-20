@@ -30,45 +30,50 @@ public class VM {
     int addr;
     int v;
 
-    while (ip < code.length) {
-      // Fetch
-      int opcode = code[ip];
-      if (trace) {
-        disassemble(opcode); // print stack trace
-      }      
+    loop:
+      while (ip < code.length) {
+        // Fetch
+        int opcode = code[ip];
+        if (trace) {
+          disassemble(opcode); // print stack trace
+        }      
 
-      // Decode
-      ip++;
-      switch (opcode) {
-        case ICONST :
-          v = code[ip];
-          ip++;
-          sp++; // prepare stack pointer
-          stack[sp] = v; // push new val onto stack
-          break;
-        case GLOAD :
-          addr = code[ip]; // provided by bytecode
-          ip++;
-          v = data[addr];
-          sp++;
-          stack[sp] = v;
-          break;
-        case GSTORE :
-          v = stack[sp];
-          sp--; // pop
-          addr = code[ip]; // where to store (provided by bytecode)
-          ip++;
-          data[addr] = v;
-          break;
-        case PRINT :
-          v = stack[sp]; // grab val from top of stack
-          sp--; // "pop"
-          System.out.println(v);
-          break;
-        case HALT :
-          return; // exit
+        // Decode
+        ip++;
+        switch (opcode) {
+          case ICONST :
+            v = code[ip];
+            ip++;
+            sp++; // prepare stack pointer
+            stack[sp] = v; // push new val onto stack
+            break;
+          case GLOAD :
+            addr = code[ip]; // provided by bytecode
+            ip++;
+            v = data[addr];
+            sp++;
+            stack[sp] = v;
+            break;
+          case GSTORE :
+            v = stack[sp];
+            sp--; // pop
+            addr = code[ip]; // where to store (provided by bytecode)
+            ip++;
+            data[addr] = v;
+            break;
+          case PRINT :
+            v = stack[sp]; // grab val from top of stack
+            sp--; // "pop"
+            System.out.println(v);
+            break;
+          case HALT :
+            break loop; // exit
+        }
       }
-    }
+
+    printMemory();
+
+
   }
 
   private void disassemble (int opcode) {
@@ -88,15 +93,13 @@ public class VM {
       stck.add(stack[i]);
     }
     System.err.print("\t\t Stack: " + stck);
-
-    // print data memory
-    // print stack
-    List<Integer> globals = new ArrayList<Integer>();
-    for (int i = 0; i < data.length; i++) {
-      globals.add(data[i]);
-    }
-    System.err.print("\t\t Globals: " + globals);
-
     System.err.println(); // new line
   };
+
+  private void printMemory () {
+    System.err.println("Data memory:");
+    for (int i = 0; i < data.length; i++) {
+      System.err.printf("%04d: %d\n", i, data[i]);
+    }
+  }
 }
