@@ -27,17 +27,15 @@ public class VM {
     while (ip < code.length) {
       // Fetch
       int opcode = code[ip];
-      ip++;
-
-      // print stack trace!
       if (trace) {
-        System.err.printf("%04d: %d\n", ip, opcode);
-      }
+        disassemble(opcode); // print stack trace
+      }      
 
       // Decode
+      ip++;
       switch (opcode) {
         case ICONST :
-          int v = code[ip]; // ip already got incremented (line 28)
+          int v = code[ip];
           ip++;
           sp++; // prepare stack pointer
           stack[sp] = v; // push new val onto stack
@@ -51,8 +49,17 @@ public class VM {
           return; // exit
       }
     }
-    
-
-
   }
+
+  private void disassemble (int opcode) {
+    Instruction instr = Bytecode.instructions[opcode];
+    System.err.printf("%04d: %s", ip, instr.name);
+    if (instr.nOperands==1) {
+      System.err.printf(" %d", code[ip+1]);
+    }
+    else if (instr.nOperands==2) {
+      System.err.printf(" %d, %d", code[ip+1], code[ip+2]);
+    }
+    System.err.println(); // new line
+  };
 }

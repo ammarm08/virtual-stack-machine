@@ -37,4 +37,37 @@ public class Bytecode {
   public static final short POP = 15;
   public static final short HALT = 16;
 
+  public static class Instruction {
+    String name; // eg IADD
+    int nOperands = 0;
+
+    public Instruction(String name) { this(name,0); }
+
+    public Instruction(String name, int nOperands) {
+      this.name = name;
+      this.nOperands = nOperands;
+    }
+  }
+
+  // mappings
+  public static Instruction[] instructions = {
+    null,
+    new Instruction("iadd"),
+    new Instruction("isub"),
+    new Instruction("imult"),
+    new Instruction("ilt"),
+    new Instruction("ieq"),
+    new Instruction("br", 1),
+    new Instruction("brt", 1),
+    new Instruction("brf", 1),
+    new Instruction("iconst", 1),
+    new Instruction("load", 1),
+    new Instruction("gload", 1),
+    new Instruction("store", 1),
+    new Instruction("gstore", 1),
+    new Instruction("print"),
+    new Instruction("pop"),
+    new Instruction("halt")
+  };
+
 }
