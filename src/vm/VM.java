@@ -23,6 +23,8 @@ public class VM {
   public void cpu() {
     // Fetch
     int opcode = code[ip];
+    
+    ip++;
 
     // Decode
     switch (opcode) {
