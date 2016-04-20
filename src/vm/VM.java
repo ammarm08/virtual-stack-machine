@@ -29,6 +29,8 @@ public class VM {
 
     int addr;
     int v;
+    int a;
+    int b;
 
     loop:
       while (ip < code.length) {
@@ -41,6 +43,30 @@ public class VM {
         // Decode
         ip++;
         switch (opcode) {
+          case IADD :
+            b = stack[sp];
+            sp--; // pop b
+            a = stack[sp];
+            sp--; // pop a
+            sp++;
+            stack[sp] = a + b; // push a + b
+            break;
+          case ISUB :
+            b = stack[sp];
+            sp--; // pop b
+            a = stack[sp];
+            sp--; // pop a
+            sp++;
+            stack[sp] = a - b; // push a - b
+            break;
+          case IMULT :
+            b = stack[sp];
+            sp--; // pop b
+            a = stack[sp];
+            sp--; // pop a
+            sp++;
+            stack[sp] = a * b; // push a * b
+            break;
           case ICONST :
             v = code[ip];
             ip++;

@@ -4,11 +4,10 @@ import static vm.Bytecode.*;
 
 public class Test {
 
-  // program that pushes 99 onto stack then prints it
   static int[] programBytecode = {
-    ICONST, 99,
-    GSTORE, 0,
-    GLOAD, 0,
+    ICONST, 1,
+    ICONST, 2,
+    IADD,
     PRINT,
     HALT
   };
