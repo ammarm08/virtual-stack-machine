@@ -21,16 +21,24 @@ public class VM {
   }
 
   public void cpu() {
-    // Fetch
-    int opcode = code[ip];
-    
-    ip++;
 
-    // Decode
-    switch (opcode) {
-      case HALT :
-        return;
+    while (ip < code.length) {
+      // Fetch
+      int opcode = code[ip];
+      ip++;
+
+      // Decode
+      switch (opcode) {
+        case ICONST :
+          break;
+        case PRINT :
+          System.out.println("This will print something.");
+          break;
+        case HALT :
+          return;
+      }
     }
+    
 
 
   }
