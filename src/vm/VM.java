@@ -30,12 +30,18 @@ public class VM {
       // Decode
       switch (opcode) {
         case ICONST :
+          int v = code[ip]; // ip already got incremented (line 28)
+          ip++;
+          sp++; // prepare stack pointer
+          stack[sp] = v; // push new val onto stack
           break;
         case PRINT :
-          System.out.println("This will print something.");
+          v = stack[sp]; // grab val from top of stack
+          sp--; // "pop"
+          System.out.println(v);
           break;
         case HALT :
-          return;
+          return; // exit
       }
     }
     
