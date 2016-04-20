@@ -43,6 +43,7 @@ public class VM {
         // Decode
         ip++;
         switch (opcode) {
+
           case IADD :
             b = stack[sp];
             sp--; // pop b
@@ -51,6 +52,7 @@ public class VM {
             sp++;
             stack[sp] = a + b; // push a + b
             break;
+
           case ISUB :
             b = stack[sp];
             sp--; // pop b
@@ -59,6 +61,7 @@ public class VM {
             sp++;
             stack[sp] = a - b; // push a - b
             break;
+
           case IMULT :
             b = stack[sp];
             sp--; // pop b
@@ -67,12 +70,29 @@ public class VM {
             sp++;
             stack[sp] = a * b; // push a * b
             break;
+
+          case ILT : 
+            break;
+
+          case IEQ :
+            break;
+
           case ICONST :
             v = code[ip];
             ip++;
             sp++; // prepare stack pointer
             stack[sp] = v; // push new val onto stack
             break;
+
+          case BR :
+            break;
+
+          case BRT :
+            break;
+
+          case BRF :
+            break;
+
           case GLOAD :
             addr = code[ip]; // provided by bytecode
             ip++;
@@ -80,6 +100,10 @@ public class VM {
             sp++;
             stack[sp] = v;
             break;
+
+          case LOAD :
+            break;
+
           case GSTORE :
             v = stack[sp];
             sp--; // pop
@@ -87,13 +111,22 @@ public class VM {
             ip++;
             data[addr] = v;
             break;
+
+          case STORE :
+            break;
+
           case PRINT :
             v = stack[sp]; // grab val from top of stack
             sp--; // "pop"
             System.out.println(v);
             break;
+
           case HALT :
             break loop; // exit
+
+          default :
+            System.out.println("Error: unrecognized opcode "+ opcode);
+            break loop;
         }
       }
 
