@@ -31,7 +31,7 @@ public class VM {
 
       // print stack trace!
       if (trace) {
-        System.err.println("%04d: %d\n"+opcode);
+        System.err.printf("%04d: %d\n", ip, opcode);
       }
 
       // Decode
