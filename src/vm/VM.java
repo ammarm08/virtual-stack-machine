@@ -72,9 +72,21 @@ public class VM {
             break;
 
           case ILT : 
+            b = stack[sp];
+            sp--; // pop b
+            a = stack[sp];
+            sp--; // pop a
+            sp++;
+            stack[sp] = a < b ? 1 : 0;
             break;
 
           case IEQ :
+            b = stack[sp];
+            sp--; // pop b
+            a = stack[sp];
+            sp--; // pop a
+            sp++;
+            stack[sp] = a == b ? 1 : 0;
             break;
 
           case ICONST :

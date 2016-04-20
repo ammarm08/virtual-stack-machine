@@ -7,7 +7,7 @@ public class Test {
   static int[] programBytecode = {
     ICONST, 1,
     ICONST, 2,
-    IADD,
+    ILT,
     PRINT,
     HALT
   };
