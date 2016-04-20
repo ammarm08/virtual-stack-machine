@@ -27,6 +27,9 @@ public class VM {
 
   public void cpu() {
 
+    int addr;
+    int v;
+
     while (ip < code.length) {
       // Fetch
       int opcode = code[ip];
@@ -38,10 +41,24 @@ public class VM {
       ip++;
       switch (opcode) {
         case ICONST :
-          int v = code[ip];
+          v = code[ip];
           ip++;
           sp++; // prepare stack pointer
           stack[sp] = v; // push new val onto stack
+          break;
+        case GLOAD :
+          addr = code[ip]; // provided by bytecode
+          ip++;
+          v = data[addr];
+          sp++;
+          stack[sp] = v;
+          break;
+        case GSTORE :
+          v = stack[sp];
+          sp--; // pop
+          addr = code[ip]; // where to store (provided by bytecode)
+          ip++;
+          data[addr] = v;
           break;
         case PRINT :
           v = stack[sp]; // grab val from top of stack
@@ -70,7 +87,15 @@ public class VM {
     for (int i = 0; i <= sp; i++) {
       stck.add(stack[i]);
     }
-    System.err.print("\t\t" + stck);
+    System.err.print("\t\t Stack: " + stck);
+
+    // print data memory
+    // print stack
+    List<Integer> globals = new ArrayList<Integer>();
+    for (int i = 0; i < data.length; i++) {
+      globals.add(data[i]);
+    }
+    System.err.print("\t\t Globals: " + globals);
 
     System.err.println(); // new line
   };
