@@ -2,6 +2,9 @@ package vm;
 
 import static vm.Bytecode.*;
 
+import java.util.List;
+import java.util.ArrayList;
+
 public class VM {
   int[] data; // data memory
   int[] code; // code memory
@@ -52,6 +55,7 @@ public class VM {
   }
 
   private void disassemble (int opcode) {
+    // print instructions and operands
     Instruction instr = Bytecode.instructions[opcode];
     System.err.printf("%04d: %s", ip, instr.name);
     if (instr.nOperands==1) {
@@ -60,6 +64,14 @@ public class VM {
     else if (instr.nOperands==2) {
       System.err.printf(" %d, %d", code[ip+1], code[ip+2]);
     }
+
+    // print stack
+    List<Integer> stck = new ArrayList<Integer>();
+    for (int i = 0; i <= sp; i++) {
+      stck.add(stack[i]);
+    }
+    System.err.print("\t\t" + stck);
+
     System.err.println(); // new line
   };
 }
