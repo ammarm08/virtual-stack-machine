@@ -1,0 +1,1 @@
+Implementation of a simple virtual machine, as inspired by Terence Parr's talk here: https://www.youtube.com/watch?v=OjaAToVkoTw
