@@ -13,6 +13,7 @@ public class Test {
 
   public static void main(String[] args) {
     VM vm = new VM(hello, 0, 0); // bytecode[], ip, datasize
+    trace = true;
     vm.cpu();
     System.out.println("Tests done.");
   }

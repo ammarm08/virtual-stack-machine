@@ -12,6 +12,8 @@ public class VM {
   int sp = -1; // stack pointer starts neg to offset for first instruction
   int fp; // frame pointer
 
+  boolean trace = false;
+
   // constructor
   public VM(int[] code, int main, int datasize) {
     this.code = code;
@@ -26,6 +28,11 @@ public class VM {
       // Fetch
       int opcode = code[ip];
       ip++;
+
+      // print stack trace!
+      if (trace) {
+        System.err.println("%04d: %d\n"+opcode);
+      }
 
       // Decode
       switch (opcode) {
