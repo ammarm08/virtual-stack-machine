@@ -36,16 +36,15 @@ public class VM {
   }
 
   protected void cpu() {
+    int opcode = code[ip];
     int addr, offset;
     int a, b;
 
-    while (ip < code.length) {
-      // Fetch
-      int opcode = code[ip];
-      if (trace) { disassemble(); }  
-      ip++; 
+    while (opcode != HALT && ip < code.length) {
+      if (trace) System.out.println(disassemble() + "\t" + stackString());
 
-      // Decode
+      // Fetch, decode, execute, repeat.
+      ip++; 
       switch (opcode) {
 
         case IADD :
@@ -102,7 +101,8 @@ public class VM {
           break;
 
         case LOAD :
-          // TO-DO
+          offset = code[ip++];
+          stack[++sp] = stack[fp+offset]; // fetch from local mem and push to stack
           break;
 
         case GSTORE :
@@ -111,7 +111,8 @@ public class VM {
           break;
 
         case STORE :
-          // TO-DO
+          offset = code[ip++];
+          stack[fp+offset] = stack[sp--]; // pop from stack and add to local mem
           break;
 
         case PRINT :
@@ -131,34 +132,51 @@ public class VM {
           break;
 
         case HALT :
-          break; // exit
+          return; // exit
 
         default :
           System.out.println("Error: unrecognized opcode " + opcode);
           break;
       }
+
+      opcode = code[ip];
     }
   }
 
-  protected void disassemble () {
+  protected String disassemble () {
     int opcode = code[ip];
     String opName = Bytecode.instructions[opcode].name;
-    System.out.printf("%04d:\t%-11s", ip, opName);
+    StringBuilder buf = new StringBuilder();
 
+    // append: memory location, instruction pointer, instruction name
+    buf.append(String.format("%04d:\t%-11s", ip, opName));
+
+    // append: ARGS (if applicable)
     int nargs = Bytecode.instructions[opcode].nOperands;
     if ( nargs > 0 ) {
-      // add operands to list
+      // add args to a list
       List<String> operands = new ArrayList<String>();
       for (int i = ip + 1; i <= ip + nargs; i++) {
         operands.add(String.valueOf(code[i]));
       }
-      // construct string
+      // construct string from list
       for (int i = 0; i < operands.size(); i++) {
         String s = operands.get(i);
-        if ( i > 0 ) System.out.print(", ");
-        System.out.print(s);
+        if ( i > 0 ) buf.append(", "); // comma-separated
+        buf.append(s); // 
       }
     }
-    System.out.println();
+
+    return buf.toString();
   };
+
+  protected String stackString() {
+    StringBuilder buf = new StringBuilder();
+    buf.append("Stack: ");
+    for (int i = 0; i <= sp; i++) {
+      buf.append(" ");
+      buf.append(stack[i]);
+    }
+    return buf.toString();
+  }
 }
