@@ -120,11 +120,25 @@ public class VM {
           break;
 
         case CALL :
-          // TO-DO
+          // builds locals and jumps to specified address
+          addr = code[ip++];
+          int nargs = code[ip++];
+          stack[++sp] = nargs;
+          stack[++sp] = fp;
+          stack[++sp] = ip;
+          fp = sp;
+          ip = addr;
           break;
 
         case RET :
-          // TO-DO
+          // wipes locals and leaves return val on top of stack
+          int returnVal = stack[sp--];
+          sp = fp;
+          ip = stack[sp--];
+          fp = stack[sp--];
+          nargs = stack[sp--];
+          sp -= nargs;
+          stack[++sp] = returnVal;
           break;
 
         case POP :
