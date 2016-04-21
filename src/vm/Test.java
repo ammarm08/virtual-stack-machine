@@ -30,22 +30,26 @@ public class Test {
   };
 
   static int[] factorial = {
-    LOAD, -3,   // 0 ---
+    // CONTROL FLOW
+    LOAD, -3,   // 0 --- load n from locals
     ICONST, 2,  // 2 ---
-    ILT,        // 4 ---
-    BRF, 10,    // 6 ---
-    ICONST, 1,  // 8 ---
-    RET,        // 9 ---
-    LOAD, -3,   // 10 --
+    ILT,        // 4 --- if 2 < n...
+    BRF, 10,    // 5 --- jump to 10
+    // BASE CASE
+    ICONST, 1,  // 7 --- base case: 1
+    RET,        // 9 --- unwind, jump to 20
+    // RECURSIVE CASE
+    LOAD, -3,   // 10 -- n
     LOAD, -3,   // 12 --
     ICONST, 1,  // 14 --
-    ISUB,       // 16 --
-    CALL, 0, 1, // 17 -- 
-    IMULT,       // 20 -- 
-    RET,        // 21 --
+    ISUB,       // 16 -- n-1
+    CALL, 0, 1, // 17 -- build locals, jump to 0
+    // THIS
+    IMULT,      // 20 -- n * n - 1
+    RET,        // 21 -- unwind at 20, finish at 27
     ICONST, 5,  // 22 --
     CALL, 0, 1, // 24 --
-    PRINT,      // 27 --
+    PRINT,      // 27 -- print top of stack
     HALT        // 28 --
   };
 
