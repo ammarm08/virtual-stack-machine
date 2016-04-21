@@ -141,6 +141,9 @@ public class VM {
 
       opcode = code[ip];
     }
+
+    printMemory();
+
   }
 
   protected String disassemble () {
@@ -178,5 +181,15 @@ public class VM {
       buf.append(stack[i]);
     }
     return buf.toString();
+  }
+
+  protected void printMemory() {
+    System.out.println("Data memory: ");
+    int addr = 0;
+    for (int k : globals) {
+      System.out.printf("%04d: %s\n", addr, k);
+      addr++;
+    }
+    System.out.println();
   }
 }
