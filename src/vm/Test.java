@@ -7,7 +7,7 @@ public class Test {
   static int[] programBytecode = {
     ICONST, 1,
     ICONST, 2,
-    ILT,
+    IADD,
     PRINT,
     HALT
   };
@@ -17,7 +17,7 @@ public class Test {
     int mainIp = 0;
     VM vm = new VM(programBytecode, mainIp, datasize);
     vm.trace = true;
-    vm.cpu();
+    vm.exec();
     System.out.println("Tests done.");
   }
 }

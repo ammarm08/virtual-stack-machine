@@ -6,171 +6,150 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class VM {
-  int[] data; // data memory
-  int[] code; // code memory
-  int[] stack; // call stack
+  public static final int DEFAULT_STACK_SIZE = 1000;
+  public static final int TRUE = 1;
+  public static final int FALSE = 0;
 
   // registers
   int ip; // instruction pointer
   int sp = -1; // stack pointer starts neg to offset for first instruction
-  int fp; // frame pointer
+  int fp = -1; // frame pointer
+
+  // memory
+  int[] code; // code memory
+  int[] globals; // global variable memory
+  int[] stack; // call stack
 
   boolean trace = false;
 
   // constructor
-  public VM(int[] code, int main, int datasize) {
+  public VM(int[] code, int startip, int datasize) {
     this.code = code;
-    this.ip = main;
-    this.data = new int[datasize]; // init size of data memory
-    this.stack = new int[100]; // arbitrary size for call stack
+    this.ip = startip;
+    globals = new int[datasize];
+    stack = new int[DEFAULT_STACK_SIZE];
   }
 
-  public void cpu() {
+  public void exec() {
+    stack[ip] = 0; // simulate OS call
+    cpu();
+  }
 
-    int addr;
-    int v;
-    int a;
-    int b;
+  protected void cpu() {
+    int addr, offset;
+    int a, b;
 
-    loop:
-      while (ip < code.length) {
-        // Fetch
-        int opcode = code[ip];
-        if (trace) {
-          disassemble(opcode); // print stack trace
-        }      
+    while (ip < code.length) {
+      // Fetch
+      int opcode = code[ip];
+      if (trace) { disassemble(); }  
+      ip++; 
 
-        // Decode
-        ip++;
-        switch (opcode) {
+      // Decode
+      switch (opcode) {
 
-          case IADD :
-            b = stack[sp];
-            sp--; // pop b
-            a = stack[sp];
-            sp--; // pop a
-            sp++;
-            stack[sp] = a + b; // push a + b
-            break;
+        case IADD :
+          b = stack[sp--];
+          a = stack[sp--];
+          stack[++sp] = a + b; // push a + b
+          break;
 
-          case ISUB :
-            b = stack[sp];
-            sp--; // pop b
-            a = stack[sp];
-            sp--; // pop a
-            sp++;
-            stack[sp] = a - b; // push a - b
-            break;
+        case ISUB :
+          b = stack[sp--];
+          a = stack[sp--];
+          stack[++sp] = a - b; // push a - b
+          break;
 
-          case IMULT :
-            b = stack[sp];
-            sp--; // pop b
-            a = stack[sp];
-            sp--; // pop a
-            sp++;
-            stack[sp] = a * b; // push a * b
-            break;
+        case IMULT :
+          b = stack[sp--];
+          a = stack[sp--];
+          stack[++sp] = a * b; // push a * b
+          break;
 
-          case ILT : 
-            b = stack[sp];
-            sp--; // pop b
-            a = stack[sp];
-            sp--; // pop a
-            sp++;
-            stack[sp] = a < b ? 1 : 0;
-            break;
+        case ILT : 
+          b = stack[sp--];
+          a = stack[sp--];
+          stack[++sp] = a < b ? 1 : 0;
+          break;
 
-          case IEQ :
-            b = stack[sp];
-            sp--; // pop b
-            a = stack[sp];
-            sp--; // pop a
-            sp++;
-            stack[sp] = a == b ? 1 : 0;
-            break;
+        case IEQ :
+          b = stack[sp--];
+          a = stack[sp--];
+          stack[++sp] = a == b ? 1 : 0;
+          break;
 
-          case ICONST :
-            v = code[ip];
-            ip++;
-            sp++; // prepare stack pointer
-            stack[sp] = v; // push new val onto stack
-            break;
+        case ICONST :
+          stack[++sp] = code[ip++]; // push new val onto stack
+          break;
 
-          case BR :
-            break;
+        case BR :
+          break;
 
-          case BRT :
-            break;
+        case BRT :
+          break;
 
-          case BRF :
-            break;
+        case BRF :
+          break;
 
-          case GLOAD :
-            addr = code[ip]; // provided by bytecode
-            ip++;
-            v = data[addr];
-            sp++;
-            stack[sp] = v;
-            break;
+        case GLOAD :
+          addr = code[ip++]; // provided by bytecode
+          stack[++sp] = globals[addr];
+          break;
 
-          case LOAD :
-            break;
+        case LOAD :
+          break;
 
-          case GSTORE :
-            v = stack[sp];
-            sp--; // pop
-            addr = code[ip]; // where to store (provided by bytecode)
-            ip++;
-            data[addr] = v;
-            break;
+        case GSTORE :
+          addr = code[ip++]; // where to store (provided by bytecode)
+          globals[addr] = stack[sp--];
+          break;
 
-          case STORE :
-            break;
+        case STORE :
+          break;
 
-          case PRINT :
-            v = stack[sp]; // grab val from top of stack
-            sp--; // "pop"
-            System.out.println(v);
-            break;
+        case PRINT :
+          System.out.println(stack[sp--]);
+          break;
 
-          case HALT :
-            break loop; // exit
+        case HALT :
+          break; // exit
 
-          default :
-            System.out.println("Error: unrecognized opcode "+ opcode);
-            break loop;
-        }
+        case RET :
+          break;
+
+        case CALL :
+          break;
+
+        case POP :
+          --sp;
+          break;
+
+        default :
+          System.out.println("Error: unrecognized opcode " + opcode);
+          break;
       }
-
-    printMemory();
-
-
+    }
   }
 
-  private void disassemble (int opcode) {
-    // print instructions and operands
-    Instruction instr = Bytecode.instructions[opcode];
-    System.err.printf("%04d: %s", ip, instr.name);
-    if (instr.nOperands==1) {
-      System.err.printf(" %d", code[ip+1]);
-    }
-    else if (instr.nOperands==2) {
-      System.err.printf(" %d, %d", code[ip+1], code[ip+2]);
-    }
+  protected void disassemble () {
+    int opcode = code[ip];
+    String opName = Bytecode.instructions[opcode].name;
+    System.out.printf("%04d:\t%-11s", ip, opName);
 
-    // print stack
-    List<Integer> stck = new ArrayList<Integer>();
-    for (int i = 0; i <= sp; i++) {
-      stck.add(stack[i]);
+    int nargs = Bytecode.instructions[opcode].nOperands;
+    if ( nargs > 0 ) {
+      // add operands to list
+      List<String> operands = new ArrayList<String>();
+      for (int i = ip + 1; i <= ip + nargs; i++) {
+        operands.add(String.valueOf(code[i]));
+      }
+      // construct string
+      for (int i = 0; i < operands.size(); i++) {
+        String s = operands.get(i);
+        if ( i > 0 ) System.out.print(", ");
+        System.out.print(s);
+      }
     }
-    System.err.print("\t\t Stack: " + stck);
-    System.err.println(); // new line
+    System.out.println();
   };
-
-  private void printMemory () {
-    System.err.println("Data memory:");
-    for (int i = 0; i < data.length; i++) {
-      System.err.printf("%04d: %d\n", i, data[i]);
-    }
-  }
 }
