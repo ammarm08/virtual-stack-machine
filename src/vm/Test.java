@@ -12,7 +12,7 @@ public class Test {
     GLOAD, 1,  //  8 ---
     GLOAD, 0,  // 10 ---
     ILT,       // 12 ---
-    BRF, 24,   // 13 --- if x < y , jump to 24 (HALT), else ...
+    BRF, 24,   // 13 --- if x <= y , jump to 24 (HALT), else ...
     GLOAD, 1,  // 15 ---
     ICONST, 1, // 17 ---
     IADD,      // 19 ---
