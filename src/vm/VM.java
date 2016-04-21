@@ -26,8 +26,8 @@ public class VM {
   public VM(int[] code, int startip, int datasize) {
     this.code = code;
     this.ip = startip;
-    globals = new int[datasize];
-    stack = new int[DEFAULT_STACK_SIZE];
+    this.globals = new int[datasize];
+    this.stack = new int[DEFAULT_STACK_SIZE];
   }
 
   public void exec() {
@@ -69,13 +69,13 @@ public class VM {
         case ILT : 
           b = stack[sp--];
           a = stack[sp--];
-          stack[++sp] = a < b ? 1 : 0;
+          stack[++sp] = a < b ? TRUE : FALSE;
           break;
 
         case IEQ :
           b = stack[sp--];
           a = stack[sp--];
-          stack[++sp] = a == b ? 1 : 0;
+          stack[++sp] = a == b ? TRUE : FALSE;
           break;
 
         case ICONST :
@@ -83,20 +83,26 @@ public class VM {
           break;
 
         case BR :
+          ip = code[ip++]; // jump to line indicated by bytecode 
           break;
 
         case BRT :
+          addr = code[ip++];
+          if (stack[sp--] == TRUE) ip = addr; // jump to line if false
           break;
 
         case BRF :
+          addr = code[ip++];
+          if (stack[sp--] == FALSE) ip = addr; // jump to line if true
           break;
 
         case GLOAD :
           addr = code[ip++]; // provided by bytecode
-          stack[++sp] = globals[addr];
+          stack[++sp] = globals[addr]; // push global
           break;
 
         case LOAD :
+          // TO-DO
           break;
 
         case GSTORE :
@@ -105,24 +111,27 @@ public class VM {
           break;
 
         case STORE :
+          // TO-DO
           break;
 
         case PRINT :
           System.out.println(stack[sp--]);
           break;
 
-        case HALT :
-          break; // exit
-
-        case RET :
+        case CALL :
+          // TO-DO
           break;
 
-        case CALL :
+        case RET :
+          // TO-DO
           break;
 
         case POP :
           --sp;
           break;
+
+        case HALT :
+          break; // exit
 
         default :
           System.out.println("Error: unrecognized opcode " + opcode);
